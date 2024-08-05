@@ -1,0 +1,214 @@
+SELECT * FROM gun_deaths_usa.gun_deaths_copy;
+
+ALTER TABLE gun_deaths_copy
+DROP COLUMN month_number,
+DROP COLUMN intention_of_death,
+DROP COLUMN sex_type,
+DROP COLUMN place,
+DROP COLUMN education;
+
+ALTER TABLE gun_deaths_copy
+DROP COLUMN age_of_deceased;
+
+SELECT min(age) AS min_age
+FROM gun_deaths_copy;
+
+SELECT max(age) AS max_age
+FROM gun_deaths_copy;
+
+ALTER TABLE gun_deaths_copy
+ADD COLUMN age_group VARCHAR(20);
+
+UPDATE gun_deaths_copy
+SET age_group = 
+	CASE
+		WHEN age BETWEEN 0 AND 16 THEN 'Child'
+        WHEN age BETWEEN 17 AND 30 THEN 'Young Adult'
+        WHEN age BETWEEN 31 AND 45 THEN 'Middle-aged Adult'
+        WHEN age > 45 THEN 'Old-aged Adult'
+        ELSE 'Invalid'
+	END;
+
+-- 1. Is gun deaths going up yearly or down?
+SELECT DISTINCT year_of_incident, count(year_of_incident) AS incidents_per_year
+FROM gun_deaths_copy
+GROUP BY year_of_incident;
+
+-- 2. What is the average age of gun death sufferer?
+SELECT round(avg(age), 1) AS average_age
+FROM gun_deaths_copy;
+
+-- 3. Top 10 most common age of death
+SELECT age, count(age) AS age_count
+FROM gun_deaths_copy
+GROUP BY age
+ORDER BY age_count DESC
+LIMIT 10;
+
+-- 4. Which month sees the highest gun deaths?
+SELECT distinct month_name, count(month_name) AS month_name_count
+FROM gun_deaths_copy
+GROUP BY month_name;
+
+-- 4. Which month sees the highest gun deaths?
+SELECT 
+    month_name, 
+    count(month_name) AS month_name_count,
+    CASE month_name
+        WHEN 'January' THEN 1
+        WHEN 'February' THEN 2
+        WHEN 'March' THEN 3
+        WHEN 'April' THEN 4
+        WHEN 'May' THEN 5
+        WHEN 'June' THEN 6
+        WHEN 'July' THEN 7
+        WHEN 'August' THEN 8
+        WHEN 'September' THEN 9
+        WHEN 'October' THEN 10
+        WHEN 'November' THEN 11
+        WHEN 'December' THEN 12
+    END AS month_order
+FROM gun_deaths_copy
+GROUP BY month_name
+ORDER BY month_order;
+
+-- 5. Which intent of gun death is highest?
+SELECT distinct intent, count(intent) AS intent_count
+FROM gun_deaths_copy
+GROUP BY intent
+ORDER BY intent_count desc;
+
+-- 7. Which intent of gun death is lowest?
+SELECT distinct intent, count(intent) AS intent_count
+FROM gun_deaths_copy
+GROUP BY intent
+ORDER BY intent_count;
+
+-- Bonus: what is the highest intent of death per year? / Is death rising or decreasing?
+SELECT distinct year_of_incident, intent, count(intent) AS intent_count
+FROM gun_deaths_copy
+GROUP BY year_of_incident, intent
+ORDER BY intent_count desc;
+
+-- 7. Which sex suffers the highest amount of gun deaths?
+SELECT distinct sex, count(*) AS sex_count
+FROM gun_deaths_copy
+GROUP BY sex
+ORDER by sex_count DESC;
+
+-- 7.5. Which sex suffers the highest amount of gun deaths?
+SELECT distinct sex, intent, year_of_incident, count(*) AS sex_count
+FROM gun_deaths_copy
+GROUP BY sex, intent, year_of_incident
+ORDER by sex_count DESC;
+
+-- 8. Which sex suffers the highest amount of gun deaths?
+SELECT distinct sex, count(*) AS sex_count
+FROM gun_deaths_copy
+GROUP BY sex
+ORDER by sex_count DESC;
+
+-- 9. Which race suffers the highest amount of gun deaths?
+SELECT race, count(*) as race_count
+FROM gun_deaths_copy
+GROUP BY race
+ORDER BY race_count DESC;
+
+-- 9.5. Intent of death suffered by race 
+SELECT race, intent, count(intent) as intent_count
+FROM gun_deaths_copy
+GROUP BY race, intent
+ORDER BY intent_count DESC;
+
+-- 9.5.0 Gun deaths suffered by blacks
+SELECT race, intent, count(intent) AS intent_count
+FROM gun_deaths_copy
+WHERE race = 'black'
+GROUP BY race, intent
+ORDER BY intent_count DESC;
+
+-- 9.5.0 Gun deaths suffered by whites
+SELECT race, intent, count(intent) AS intent_count
+FROM gun_deaths_copy
+WHERE race = 'white'
+GROUP BY race, intent
+ORDER BY intent_count DESC;
+
+-- 10. Which race suffers the lowest aount of gun deaths?
+SELECT race, count(*) AS race_count
+FROM gun_deaths_copy
+GROUP BY race
+ORDER BY race_count;
+
+-- 11. Which place sees the highest amount of gun deaths?
+SELECT place_of_incident, count(*) AS place_count
+FROM gun_deaths_copy
+GROUP BY place_of_incident
+ORDER BY place_count DESC;
+
+-- 11.5. Which place sees the highest amount of gun deaths by race?
+SELECT race, place_of_incident, count(*) AS place_count
+FROM gun_deaths_copy
+WHERE race = 'white' or race = 'black'
+GROUP BY race, place_of_incident
+ORDER BY place_count DESC;
+
+-- 12. Which place sees the lowest amount of gun deaths?
+SELECT place_of_incident, count(*) AS place_count
+FROM gun_deaths_copy
+GROUP BY place_of_incident
+ORDER BY place_count;
+
+-- 13. What is the education of the sufferers of gun death?
+SELECT education_level, count(*) AS count_education
+FROM gun_deaths_copy
+GROUP BY education_level
+ORDER BY count_education DESC;
+
+-- 13.5. What is the education level of White sufferers of gun death?
+SELECT race, education_level, count(*) AS count_education
+FROM gun_deaths_copy
+WHERE race = 'White'
+GROUP BY race, education_level
+ORDER BY count_education DESC;
+
+-- 13.5. What is the education level of Black sufferers of gun death?
+SELECT race, education_level, count(*) AS count_education
+FROM gun_deaths_copy
+WHERE race = 'Black'
+GROUP BY race, education_level
+ORDER BY count_education DESC;
+
+-- 14. Which age bracket suffers from gun deaths the most?
+SELECT age_group, count(*) AS count_age_group
+FROM gun_deaths_copy
+GROUP BY age_group
+ORDER BY count_age_group DESC;
+
+-- 14.5. Death intent by age_group (Child)
+SELECT age_group, intent, count(intent) AS intent_count
+FROM gun_deaths_copy
+WHERE age_group = 'Child'
+GROUP BY age_group, intent
+ORDER BY intent_count DESC;
+
+-- 14.5.0. Death intent by age_group (Young Adult)
+SELECT age_group, intent, count(intent) AS intent_count
+FROM gun_deaths_copy
+WHERE age_group = 'Young Adult'
+GROUP BY age_group, intent
+ORDER BY intent_count DESC;
+
+-- 14.5.5. Death intent by age_group (Middle-aged Adult)
+SELECT age_group, intent, count(intent) AS intent_count
+FROM gun_deaths_copy
+WHERE age_group = 'Middle-aged Adult'
+GROUP BY age_group, intent
+ORDER BY intent_count DESC;
+
+-- 14.5.5.5. Death intent by age_group (Old-aged Adult)
+SELECT age_group, intent, count(intent) AS intent_count
+FROM gun_deaths_copy
+WHERE age_group = 'Old-aged Adult'
+GROUP BY age_group, intent
+ORDER BY intent_count DESC;
