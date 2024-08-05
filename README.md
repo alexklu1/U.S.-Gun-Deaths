@@ -49,7 +49,7 @@ Use visual storytelling to effectively communicate complex data insights to a br
 By achieving these objectives, this project aims to provide a comprehensive understanding of the factors influencing gun deaths in the U.S. and contribute to informed discussions on this critical issue.
 ## Screenshot
 
-![image](https://github.com/alexklu1/Pizza_Sales_Project/assets/113979059/f544b659-7fee-4338-b6b1-16ffa7b3be7e)
+![Screenshot (1085)](https://github.com/user-attachments/assets/3f8224fc-4191-43d3-bb7c-b570697b84e0)
 
 
 
