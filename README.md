@@ -54,7 +54,6 @@ By achieving these objectives, this project aims to provide a comprehensive unde
 
 
 
-C:\Users\user\Pictures\Screenshots\Screenshot (1085).png
 ## Authors
 
 - [@alexklu1](https://www.github.com/alexklu1)
